@@ -1,0 +1,46 @@
+﻿-------------------------------------------------------------------
+CS4500 Fall 2013 
+-------------------------------------------------------------------
+Assignment 4 Rapid Prototype
+
+
+-------------------------------------------------------------------
+Team Members:
+-------------------------------------------------------------------
+Arvin Wibisono <arvindeva@gmail.com>
+Ben Yoshiwara <yoshiwara.b@gmail.com>
+Bobby Deng <bdeng09@gmail.com>
+Seydi Sy <syseydi@gmail.com>
+
+
+-------------------------------------------------------------------
+Compiling and Running Rapid Prototype:
+-------------------------------------------------------------------
+
+
+The prototype is ran on the command line. It can be ran on any CCIS Linux machines. The prototype input takes two files. A file can be a file in WAVE format or a folder containing files in the WAVE format
+
+
+On a CCIS Linux Machine:
+
+
+1. Open the command line. 
+
+
+2. cd into our project directory named Source. This directory contains the executable.
+
+
+$ cd Source
+
+
+3. Move files you wish to compare into our project directory.
+
+
+4. Execute the following command:
+
+
+$ python projectmain.py <filename> <filename>
+
+where <filename> is a file in WAVE format or a folder containing files in the WAVE format. The files need to already exist in our project directory.
+
+5. The program will compare the WAVE files to see whether either is likely to have been derived from the other. If so, then the program will print "MATCH" to standard output, followed by a newline.  If not, then the program should print "NO MATCH" to standard output, followed by a newline.The program will terminate when all files are matched.
