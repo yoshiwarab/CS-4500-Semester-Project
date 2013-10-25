@@ -8,7 +8,7 @@ import wave
 from array import array
 
 class SongInfo():
-
+    """Class to encapsulate song data and info."""
     @classmethod
     def from_file(self, filename):
         try:
@@ -23,7 +23,6 @@ class SongInfo():
         wavefile.close()
         return song_info
 
-    """Class to encapsulate song data and info."""
     def __init__(self, filename, nchannels):
         self.name = filename.split('/')[1]
         self.nchannels = nchannels
@@ -40,11 +39,6 @@ class SongInfo():
         raw_array = array('h', bytestring)
         self.wave_integer_array = raw_array
 
-     def byte_string_to_integer_array(self, bytestring):
-        """Converts output string from wave.readframes into a signed integer array"""
-        raw_array = array('h', bytestring)
-        self.wave_integer_array = raw_array
-
     def compare(self, song_info):
         if len(self.wave_integer_array) == len(song_info.wave_integer_array):
             correlation_matrix = numpy.corrcoef(self.wave_integer_array,
@@ -55,10 +49,26 @@ class SongInfo():
               song_info.wave_integer_array in self.wave_integer_array):
             print "MATCH: %s %s" % (self.name, song_info.name)
 
+    
+def levenshtein(seq1, seq2):
+    oneago = None
+    thisrow = range(1, len(seq2) + 1) + [0]
+    for x in xrange(len(seq1)):
+        twoago, oneago, thisrow = oneago, thisrow, [0] * len(seq2) + [x + 1]
+        for y in xrange(len(seq2)):
+            delcost = oneago[y] + 1
+            addcost = thisrow[y - 1] + 1
+            subcost = oneago[y - 1] + (seq1[x] != seq2[y])
+            thisrow[y] = min(delcost, addcost, subcost)
+    print thisrow[len(seq2) - 1]
+    return thisrow[len(seq2) - 1]
+
 def compare_song_info_lists(song_info_list1, song_info_list2):
     for song1 in song_info_list1:
         for song2 in song_info_list2:
-            song1.compare(song2)
+            #song1.compare(song2)
+            print levenshtein(song1.wave_integer_array, song2.wave_integer_array)
+
 
 def main(argv):
     dir1 = argv[1]
