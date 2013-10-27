@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import fileutils
 import numpy
 import scipy
@@ -20,11 +19,10 @@ class SongInfo():
             bytestring = wavefile.readframes(nframes)
             song_info.byte_string_to_integer_array(bytestring)
             wavefile.close()
+            return song_info
         except wave.Error:
             print "Error %s is invalid" % filename
-        
-        return song_info
-
+    
     """Class to encapsulate song data and info."""
     def __init__(self, filename, nchannels):
         self.name = self.get_name(filename)
