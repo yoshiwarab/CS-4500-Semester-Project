@@ -6,6 +6,7 @@ def gen_file_list(dir):
 	filelist = []
 	for file in os.listdir(dir):
 		filelist.append(os.path.join(dir, file))
+	print filelist
 	return filelist
 
 def readfiles(filelist):
