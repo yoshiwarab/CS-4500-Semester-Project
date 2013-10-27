@@ -11,23 +11,30 @@ class SongInfo():
     """Class to encapsulate song data and info."""
     @classmethod
     def from_file(self, filename):
+        song_info = None
         try:
             wavefile = wave.open(filename, 'r')
+            nframes = wavefile.getnframes()
+            nchannels = wavefile.getnchannels()
+            song_info = self(filename, nchannels)
+            bytestring = wavefile.readframes(nframes)
+            song_info.byte_string_to_integer_array(bytestring)
+            wavefile.close()
         except wave.Error:
             print "Error %s is invalid"
-        nframes = wavefile.getnframes()
-        nchannels = wavefile.getnchannels()
-        song_info = self(filename, nchannels)
-        bytestring = wavefile.readframes(nframes)
-        song_info.byte_string_to_integer_array(bytestring)
-        wavefile.close()
+         
         return song_info
 
     def __init__(self, filename, nchannels):
-        self.name = filename.split('/')[1]
+        self.name = self.get_name(filename)
         self.nchannels = nchannels
         self.wave_integer_array = None
         self.matches = []
+
+    def get_name(self, filepath):
+        pathlist = filepath.split('/')
+        name = pathlist[len(pathlist)-1]
+        return name
 
     def compare_frames(self, song_info):
         """Compares song"""
@@ -66,8 +73,10 @@ def levenshtein(seq1, seq2):
 def compare_song_info_lists(song_info_list1, song_info_list2):
     for song1 in song_info_list1:
         for song2 in song_info_list2:
+            if song1 and song2:
             #song1.compare(song2)
-            print levenshtein(song1.wave_integer_array, song2.wave_integer_array)
+                print len(song1.wave_integer_array)
+                print levenshtein(song1.wave_integer_array, song2.wave_integer_array)
 
 
 def main(argv):
