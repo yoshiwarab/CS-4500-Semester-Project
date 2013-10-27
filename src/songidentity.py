@@ -58,6 +58,7 @@ class SongInfo():
 
     
 def levenshtein(seq1, seq2):
+"""levenshtein distance function taken from wiki site.  Takes forever!"""
     oneago = None
     thisrow = range(1, len(seq2) + 1) + [0]
     for x in xrange(len(seq1)):
@@ -71,13 +72,12 @@ def levenshtein(seq1, seq2):
     return thisrow[len(seq2) - 1]
 
 def compare_song_info_lists(song_info_list1, song_info_list2):
+"""Prints the levenshtein distance between every song in the list"""
     for song1 in song_info_list1:
         for song2 in song_info_list2:
             if song1 and song2:
-            #song1.compare(song2)
                 print len(song1.wave_integer_array)
                 print levenshtein(song1.wave_integer_array, song2.wave_integer_array)
-
 
 def main(argv):
     dir1 = argv[1]
