@@ -46,18 +46,7 @@ class SongInfo():
         """Converts output string from wave.readframes into a signed integer array"""
         raw_array = array('h', bytestring)
         self.wave_integer_array = raw_array
-'''
-    def compare(self, song_info):
-        if len(self.wave_integer_array) == len(song_info.wave_integer_array):
-            correlation_matrix = numpy.corrcoef(self.wave_integer_array,
-                                                song_info.wave_integer_array)
-            if correlation_matrix[0][1] > .7:
-                print "MATCH: %s %s" % (self.name, song_info.name)
-        elif (self.wave_integer_array in song_info.wave_integer_array or
-              song_info.wave_integer_array in self.wave_integer_array):
-            print "MATCH: %s %s" % (self.name, song_info.name)
 
-'''
     def compare(self, song_info):
         if len(self.wave_integer_array) == len(song_info.wave_integer_array):
             correlation_matrix = numpy.corrcoef(self.wave_integer_array,
