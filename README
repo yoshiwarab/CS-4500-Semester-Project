@@ -18,9 +18,11 @@ Compiling and Running Rapid Prototype:
 --------------------------------------------------------------
 
 
-The prototype is ran on the command line. It can be ran on any CCIS Linux machines. 
-The prototype input takes two files. 
-A file can be a file in WAVE or MP3 format or a folder containing files in the WAVE or MP3 format
+-The prototype is ran on the command line. 
+-It can be ran on any CCIS Linux machines. 
+-The prototype input takes two files. 
+-A file can be a file in WAVE or MP3 format 
+or a folder containing files in the WAVE or MP3 format
 
 
 On a CCIS Linux Machine:
@@ -29,13 +31,11 @@ On a CCIS Linux Machine:
 1. Open the command line. 
 
 
-2. cd into our project directory named src. This directory contains the executable.
+2. cd into our project directory containing the executable, 
+named src:
 
 
 $ cd src
-
-
-3. Move files you wish to compare into our project directory.
 
 
 4. Execute the following command:
@@ -43,10 +43,14 @@ $ cd src
 
 $ ./p4500 -f <name> -f <name>
 
-Enter either -f for WAV/MP3 file, or -d for directory consisting the WAV/MP3 files.
-<name> is the path of the directory or file that is going to be compared.
+- Enter either -f for WAV/MP3 file, 
+or -d for a directory containing the WAV/MP3 files.
+- <name> is the path of the directory or file that already exists.
 
-5. The program will compare the files to see if one file is likely to have been derived from the other. 
-If so, then the program will print "MATCH: <filename> <filename>” to standard output, followed by a newline.  
-If not, then the program will not output anything and continue onto comparing the next files. 
-The program will terminate after all files have been compared.
+
+--------------------------------------------------------------
+Third Party Software Used:
+--------------------------------------------------------------
+
+Python 2.7 (numpy, scipy) 
+LAME executable 
