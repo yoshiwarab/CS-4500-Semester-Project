@@ -1,29 +1,25 @@
 #!/usr/bin/env python
 import fileutils
-import numpy
+import numpy as np
 import scipy
 import sys
 import wave
 from array import array
 
 class SongInfo():
+    """Class to encapsulate song data and info."""
 
     @classmethod
     def from_file(self, filename):
-        song_info = None
-        try:
-            wavefile = wave.open(filename, 'r')
-            nframes = wavefile.getnframes()
-            nchannels = wavefile.getnchannels()
-            song_info = self(filename, nchannels)
-            bytestring = wavefile.readframes(nframes)
-            song_info.byte_string_to_integer_array(bytestring)
-            wavefile.close()
-            return song_info
-        except wave.Error:
-            print "Error %s is invalid" % filename
+        wavefile = wave.open(filename, 'r')
+        nframes = wavefile.getnframes()
+        nchannels = wavefile.getnchannels()
+        song_info = self(filename, nchannels)
+        bytestring = wavefile.readframes(nframes)
+        song_info.byte_string_to_integer_array(bytestring)
+        wavefile.close()
+        return song_info
     
-    """Class to encapsulate song data and info."""
     def __init__(self, filename, nchannels):
         self.name = self.get_name(filename)
         self.nchannels = nchannels
@@ -35,19 +31,26 @@ class SongInfo():
         name = pathlist[len(pathlist)-1]
         return name
 
-    def compare_frames(self, song_info):
+    def compare_bytestring(self, song_info):
         """Compares song"""
-        if song_info.frames == self.frames:
+        if song_info.bytestring == self.bytestring:
             self.matches.append(song_info.name)
 
     def byte_string_to_integer_array(self, bytestring):
         """Converts output string from wave.readframes into a signed integer array"""
         raw_array = array('h', bytestring)
-        self.wave_integer_array = raw_array
+        if self.nchannels == 2:
+            left = raw_array[0::2]
+            right = raw_array[1::2]
+            mono = [(left[i] + right[i])/2 for i in range(0, len(left))]
+        else:
+            mono = raw_array
+        self.wave_integer_array = mono
 
     def compare(self, song_info):
+        """If the files are the same lenght do a numpy correlation check otherwise string search."""
         if len(self.wave_integer_array) == len(song_info.wave_integer_array):
-            correlation_matrix = numpy.corrcoef(self.wave_integer_array,
+            correlation_matrix = np.corrcoef(self.wave_integer_array,
                                                 song_info.wave_integer_array)
             if correlation_matrix[0][1] > .7:
                 print "MATCH: %s %s" % (self.name, song_info.name)
