@@ -36,11 +36,14 @@ def main(argv):
     parser.add_option("-d", help = "Accept directories as inputs.", action = "append")
     options, args = parser.parse_args()
     option_dict = vars(options)
+    if len(option_dict) < 2:
+        parser.print_usage()
     if option_dict["file"] and len(option_dict["file"])==2:
         file_compare(option_dict["file"][0], option_dict["file"][1])
     elif option_dict["d"] and len(option_dict["d"])==2:
         dir_compare(option_dict["d"][0], option_dict["d"][1])
     else:
+        print option_dict
         parser.print_usage()
 
 if __name__ == '__main__':
