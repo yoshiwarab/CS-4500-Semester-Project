@@ -8,9 +8,7 @@ LAME_DECODE = "/course/cs4500f13/bin/lame --decode %s %s"
 def mp3_to_wave_subprocess(mp3):
     """convert mp3 to wave by calling lame in subprocess returns filename"""
     wav = "%s.wav" % os.path.splitext(mp3)[0]
-    print wav
     decode = LAME_DECODE % (mp3, wav)
-    print decode
     subprocess.check_call(decode.split(" "))
     return wav
 
