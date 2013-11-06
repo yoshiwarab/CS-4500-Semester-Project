@@ -23,13 +23,14 @@ def gen_file_list(dir):
     return filelist
 
 def read_file(filename):
+    song_info = None
     try:
         song_info = SongInfo.from_file(filename)
     except wave.Error:
         print "%s is not in wave format, attempting to convert..." % filename
         try:
             wavefile = mp3_to_wave_subprocess(filename)
-            SongInfo.from_file(wavefile)
+            song_info = SongInfo.from_file(wavefile)
         except subprocess.CalledProcessError as e:
             print "Invalid file %s. Error: %s" % (filename, e)
         except Exception as e:
