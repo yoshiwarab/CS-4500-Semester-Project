@@ -1,24 +1,28 @@
-﻿-------------------------------------------------------------------
+--------------------------------------------------------------
 CS4500 Fall 2013 
--------------------------------------------------------------------
-Assignment 4 Rapid Prototype
+--------------------------------------------------------------
+Assignment 5
 
+Semester Project Rapid Prototype
 
--------------------------------------------------------------------
+--------------------------------------------------------------
 Team Members:
--------------------------------------------------------------------
+--------------------------------------------------------------
 Arvin Wibisono <arvindeva@gmail.com>
 Ben Yoshiwara <yoshiwara.b@gmail.com>
 Bobby Deng <bdeng09@gmail.com>
 Seydi Sy <syseydi@gmail.com>
-...
-...
--------------------------------------------------------------------
+
+--------------------------------------------------------------
 Compiling and Running Rapid Prototype:
--------------------------------------------------------------------
+--------------------------------------------------------------
 
 
-The prototype is ran on the command line. It can be ran on any CCIS Linux machines. The prototype input takes two files. A file can be a file in WAVE format or a folder containing files in the WAVE format
+-The prototype is ran on the command line. 
+-It can be ran on any CCIS Linux machines. 
+-The prototype input takes two files. 
+-A file can be a file in WAVE or MP3 format 
+or a folder containing files in the WAVE or MP3 format
 
 
 On a CCIS Linux Machine:
@@ -27,20 +31,26 @@ On a CCIS Linux Machine:
 1. Open the command line. 
 
 
-2. cd into our project directory named Source. This directory contains the executable.
+2. cd into our project directory containing the executable, 
+named src:
 
 
-$ cd Source
-
-
-3. Move files you wish to compare into our project directory.
+$ cd src
 
 
 4. Execute the following command:
 
 
-$ python projectmain.py <filename> <filename>
+$ ./p4500 -f <name> -f <name>
 
-where <filename> is a file in WAVE format or a folder containing files in the WAVE format. The files need to already exist in our project directory.
+- Enter either -f for WAV/MP3 file, 
+or -d for a directory containing the WAV/MP3 files.
+- <name> is the path of the directory or file that already exists.
 
-5. The program will compare the WAVE files to see whether either is likely to have been derived from the other. If so, then the program will print "MATCH" to standard output, followed by a newline.  If not, then the program should print "NO MATCH" to standard output, followed by a newline.The program will terminate when all files are matched.
+
+--------------------------------------------------------------
+Third Party Software Used:
+--------------------------------------------------------------
+
+Python 2.7 (numpy, scipy) 
+LAME executable 
