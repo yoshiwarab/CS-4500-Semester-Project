@@ -18,8 +18,8 @@ Compiling and Running Rapid Prototype:
 --------------------------------------------------------------
 
 
--The prototype is ran on the command line. 
--It can be ran on any CCIS Linux machines. 
+-The prototype is run on the command line. 
+-It can be run on any CCIS Linux machines. 
 -The prototype input takes two files. 
 -A file can be a file in WAVE or MP3 format 
 or a folder containing files in the WAVE or MP3 format
@@ -28,14 +28,13 @@ or a folder containing files in the WAVE or MP3 format
 On a CCIS Linux Machine:
 
 
-1. Open the command line. 
+1. Open the command line.
 
 
-2. cd into our project directory containing the executable, 
-named src:
+2. cd into the src subdirectory of our project directory.
 
 
-$ cd src
+3. Make sure the file called p4500 has executable permission.
 
 
 4. Execute the following command:
@@ -45,12 +44,13 @@ $ ./p4500 -f <name> -f <name>
 
 - Enter either -f for WAV/MP3 file, 
 or -d for a directory containing the WAV/MP3 files.
-- <name> is the path of the directory or file that already exists.
+- <name> is the full path of the directory or file that already exists.
 
 
 --------------------------------------------------------------
 Third Party Software Used:
 --------------------------------------------------------------
 
-Python 2.7 (numpy, scipy) 
+numpy
+scipy 
 LAME executable 
