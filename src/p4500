@@ -27,7 +27,8 @@ def file_compare(file1, file2):
     """Compares file1 to file2"""
     song1 = fileutils.read_file(file1)
     song2 = fileutils.read_file(file2)
-    song1.compare(song2)
+    if song1 and song2:
+        song1.compare(song2)
 
 def main(argv):
     usage = "p4500 [options] source1 [options] source2"
@@ -43,7 +44,6 @@ def main(argv):
     elif option_dict["d"] and len(option_dict["d"])==2:
         dir_compare(option_dict["d"][0], option_dict["d"][1])
     else:
-        print option_dict
         parser.print_usage()
 
 if __name__ == '__main__':
