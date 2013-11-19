@@ -1,10 +1,11 @@
-import fileutils
 import numpy as np
-import scipy
-import sys
 import wave
 from array import array
 from operator import itemgetter
+from scipy.stats import linregress
+import pylab
+
+CHUNK_SIZE = 1024
 
 
 class SongInfo(object):
@@ -42,13 +43,13 @@ class SongInfo(object):
         time = 0
         chunks = {}
         while True:
-            chunk_string = wavefile.readframes(1024)
+            chunk_string = wavefile.readframes(CHUNK_SIZE)
             if len(chunk_string) > 0:
                 chunk = SongChunk.from_bytestring(
                     time, chunk_string, self.nchannels)
                 if chunk is not None:
                     chunks[chunk.hash()] = chunk
-                time += 1024 / self.sample_rate
+                time += round((float(CHUNK_SIZE) / self.sample_rate), 3)
             else:
                 break
         self.chunks = chunks
@@ -57,13 +58,25 @@ class SongInfo(object):
         song1_chunks_set = set(self.chunks.keys())
         song2_chunks_set = set(song2.chunks.keys())
         intersection = song1_chunks_set.intersection(song2_chunks_set)
-        #print "%s %s %s" % (self.name, song2.name, float(len(intersection))/len(song2_chunks_set))
         if float(len(intersection))/len(song2_chunks_set) > 0.3:
             print 'Match: %s %s' % (self.name, song2.name)
+        elif float(len(intersection))/len(song1_chunks_set) > 0.3:
+            print 'Match: %s %s' % (self.name, song2.name)
 
-        #print "Comparing %s, length %s, and %s, length %s" % (self.name, len(song1_chunks_set), song2.name, len(song2_chunks_set))
-        # print "Intersection length %s" % len(intersection)
-        # print "Intersection: %s\n" % intersection
+    def compare(self, song2):
+        song1_match_times = []
+        song2_match_times = []
+        for chunk_hash,chunk in self.chunks.items():
+            if chunk_hash in song2.chunks:
+                song1_match_times.append(chunk.time)
+                song2_match_times.append(song2.chunks[chunk_hash].time)
+        print "Comparing: %s %s" % (self.name, song2.name)
+        pylab.plot(song1_match_times, song2_match_times, '.')
+        pylab.show()
+        if len(song1_match_times) > 5:
+            r2 = linregress(np.array(song1_match_times), np.array(song2_match_times))[2]**2
+            if r2 > .5:
+                print "Match: %s %s" % (self.name, song2.name)
 
 
 class SongChunk(object):
@@ -86,13 +99,11 @@ class SongChunk(object):
         """ Returns a 32-bit int identifying the chunk """
         a, b, c, d = [x[0] for x in self.bins]
         f = 2
-        # We're never going to try and extract the data from this, so we don't care if we're
-        # overwriting things with oversized numbers.
-        return (((a - a % f) << 24) | ((b - b % f) << 16) | ((c - c % f) << 8) | (d - d % f)) & 0xffffffff
+        return (d-(d%f)) * 100000000 + (c-(c%f)) * 100000 + (b-(b%f)) * 100 + (a-(a%f)) & 0xffffffff
 
 
 def get_max_per_range(r, a, b):
-    """ Returns the maximum value within the gieven range
+    """ Returns the maximum value within the given range
     in the form (index, value).
     """
     return max(enumerate(r[a:b], a), key=itemgetter(1))
