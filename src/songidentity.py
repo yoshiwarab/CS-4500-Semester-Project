@@ -4,6 +4,7 @@ from array import array
 from operator import itemgetter
 from scipy.stats import linregress
 import pylab
+import hashlib
 
 CHUNK_SIZE = 1024
 
@@ -31,7 +32,6 @@ class SongInfo(object):
         self.name = self.get_name(filename)
         self.nchannels = nchannels
         self.sample_rate = sample_rate
-        self.matches = []
 
     def get_name(self, filepath):
         """Given a full filepath, returns just the wave file name"""
@@ -54,14 +54,14 @@ class SongInfo(object):
                 break
         self.chunks = chunks
 
-    def compare(self, song2):
-        song1_chunks_set = set(self.chunks.keys())
-        song2_chunks_set = set(song2.chunks.keys())
-        intersection = song1_chunks_set.intersection(song2_chunks_set)
-        if float(len(intersection))/len(song2_chunks_set) > 0.3:
-            print 'Match: %s %s' % (self.name, song2.name)
-        elif float(len(intersection))/len(song1_chunks_set) > 0.3:
-            print 'Match: %s %s' % (self.name, song2.name)
+    """def compare(self, song2):
+                    song1_chunks_set = set(self.chunks.keys())
+                    song2_chunks_set = set(song2.chunks.keys())
+                    intersection = song1_chunks_set.intersection(song2_chunks_set)
+                    if float(len(intersection))/len(song2_chunks_set) > 0.3:
+                        print 'Match: %s %s' % (self.name, song2.name)
+                    elif float(len(intersection))/len(song1_chunks_set) > 0.3:
+                        print 'Match: %s %s' % (self.name, song2.name)"""
 
     def compare(self, song2):
         song1_match_times = []
@@ -70,13 +70,31 @@ class SongInfo(object):
             if chunk_hash in song2.chunks:
                 song1_match_times.append(chunk.time)
                 song2_match_times.append(song2.chunks[chunk_hash].time)
-        print "Comparing: %s %s" % (self.name, song2.name)
-        pylab.plot(song1_match_times, song2_match_times, '.')
-        pylab.show()
-        if len(song1_match_times) > 5:
-            r2 = linregress(np.array(song1_match_times), np.array(song2_match_times))[2]**2
-            if r2 > .5:
-                print "Match: %s %s" % (self.name, song2.name)
+            #print "Comparing: %s %s" % (self.name, song2.name)
+            #pylab.plot(song1_match_times, song2_match_times, '.')
+            #pylab.show()
+        #print "%s Match Times: %s\n" % (self.name, sorted(song1_match_times))
+        #print "%s Match Times: %s\n" % (song2.name, sorted(song2_match_times))
+        if self.consecutive_time_chunk_match(sorted(song1_match_times), 1):
+            print "Match: %s %s" % (self.name, song2.name)
+        """if len(song1_match_times) > 5:
+                                    r2 = linregress(np.array(song1_match_times), np.array(song2_match_times))[2]**2
+                                    if r2 > .5:
+                                        print "Match: %s %s" % (self.name, song2.name)"""
+
+    def consecutive_time_chunk_match(self, song1_chunk_times, song2_chunk_times, step_size, match_threshol):
+        chain = []
+        prev = None
+        for i in range(len(sorted_list)-1):
+            if not chain:
+                chain.append(sorted_list[i])
+            if len(chain) > 20:
+                return True
+            if (sorted_list[i+1] - sorted_list[i]) <= step_size:
+                chain.append(sorted_list[i+1])
+            else:
+                return False
+
 
 
 class SongChunk(object):
@@ -100,7 +118,6 @@ class SongChunk(object):
         a, b, c, d = [x[0] for x in self.bins]
         f = 2
         return (d-(d%f)) * 100000000 + (c-(c%f)) * 100000 + (b-(b%f)) * 100 + (a-(a%f)) & 0xffffffff
-
 
 def get_max_per_range(r, a, b):
     """ Returns the maximum value within the given range
