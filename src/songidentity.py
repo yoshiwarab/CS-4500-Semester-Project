@@ -1,13 +1,10 @@
+import constants
 import numpy as np
 import wave
 from array import array
 from operator import itemgetter
 from scipy.stats import linregress
 import pylab
-import hashlib
-
-CHUNK_SIZE = 2048
-
 
 class SongInfo(object):
 
@@ -39,17 +36,20 @@ class SongInfo(object):
         name = pathlist[len(pathlist) - 1]
         return name
 
+    def set_name(self, name):
+        self.name = name
+
     def chunk_wavefile(self, wavefile):
         time = 0
         chunks = {}
         while True:
-            chunk_string = wavefile.readframes(CHUNK_SIZE)
+            chunk_string = wavefile.readframes(constants.CHUNK_SIZE)
             if len(chunk_string) > 0:
                 chunk = SongChunk.from_bytestring(
                     time, chunk_string, self.nchannels)
                 if chunk is not None:
                     chunks[chunk.hash()] = chunk
-                time = round(time + (float(CHUNK_SIZE) / self.sample_rate), 3)
+                time = round(time + (float(constants.CHUNK_SIZE) / self.sample_rate), 3)
             else:
                 break
         self.chunks = chunks
@@ -65,11 +65,12 @@ class SongInfo(object):
             #print sorted_match_times
             #pylab.plot(zip(*sorted_match_times)[0], zip(*sorted_match_times)[1], '.')
             #pylab.show()
-            print self.name, song2.name
-            if self.consecutive_time_matches(sorted(match_times, key=itemgetter(0)), 2, 15):
-                print "MATCH %s %s" % (self.name, song2.name)
+            if self.consecutive_time_matches(sorted(match_times, key=itemgetter(0)), constants.CHUNK_STEP_SIZE, constants.MATCH_THRESHOLD):
+                print "MATCH %s %s" % (shorter.name, longer.name)
             else:
                 print "NO MATCH"
+        else:
+            print "NO MATCH"
 
     def consecutive_time_matches(self, sorted_match_times, step_size, match_threshold):
         chains = []
@@ -86,9 +87,9 @@ class SongInfo(object):
         chains.append(chain)
         if chains:
             longest_chain = max(chains, key=lambda k: len(k))
-            if longest_chain:
-                pylab.plot(zip(*longest_chain)[0], zip(*longest_chain)[1], '.')
-                pylab.show()
+            #if longest_chain:
+                #pylab.plot(zip(*longest_chain)[0], zip(*longest_chain)[1], '.')
+                #pylab.show()
             if len(longest_chain) >= match_threshold:
                 return True
             else:
@@ -116,8 +117,9 @@ class SongChunk(object):
     def hash(self):
         """ Returns a 32-bit int identifying the chunk """
         a, b, c, d = [x[0] for x in self.bins]
-        f = 2
-        return (d-(d%f)) * 100000000 + (c-(c%f)) * 100000 + (b-(b%f)) * 100 + (a-(a%f)) & 0xffffffff
+        f = constants.HASH_FUZZ
+        #return (d-(d%f)) * 100000000 + (c-(c%f)) * 100000 + (b-(b%f)) * 100 + (a-(a%f)) & 0xffffffff
+        return (((a - a%f) << 24) | ((b - b%f) << 16) | ((c - c%f) << 8) | (d - d%f)) & 0xffffffff
 
 def get_max_per_range(r, a, b):
     """ Returns the maximum value within the given range
