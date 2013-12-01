@@ -6,7 +6,7 @@ from scipy.stats import linregress
 import pylab
 import hashlib
 
-CHUNK_SIZE = 1024
+CHUNK_SIZE = 2048
 
 
 class SongInfo(object):
@@ -49,51 +49,51 @@ class SongInfo(object):
                     time, chunk_string, self.nchannels)
                 if chunk is not None:
                     chunks[chunk.hash()] = chunk
-                time += round((float(CHUNK_SIZE) / self.sample_rate), 3)
+                time = round(time + (float(CHUNK_SIZE) / self.sample_rate), 3)
             else:
                 break
         self.chunks = chunks
 
-    """def compare(self, song2):
-                    song1_chunks_set = set(self.chunks.keys())
-                    song2_chunks_set = set(song2.chunks.keys())
-                    intersection = song1_chunks_set.intersection(song2_chunks_set)
-                    if float(len(intersection))/len(song2_chunks_set) > 0.3:
-                        print 'Match: %s %s' % (self.name, song2.name)
-                    elif float(len(intersection))/len(song1_chunks_set) > 0.3:
-                        print 'Match: %s %s' % (self.name, song2.name)"""
-
     def compare(self, song2):
-        song1_match_times = []
-        song2_match_times = []
-        for chunk_hash,chunk in self.chunks.items():
-            if chunk_hash in song2.chunks:
-                song1_match_times.append(chunk.time)
-                song2_match_times.append(song2.chunks[chunk_hash].time)
-            #print "Comparing: %s %s" % (self.name, song2.name)
-            #pylab.plot(song1_match_times, song2_match_times, '.')
+        match_times = []
+        shorter, longer = (sorted([self, song2], key = lambda x: len(x.chunks)))
+        for chunk_hash,chunk in shorter.chunks.items():
+            if chunk_hash in longer.chunks:
+                match_times.append((chunk.time, longer.chunks[chunk_hash].time))
+        if match_times:
+            #sorted_match_times = sorted(match_times, key=itemgetter(0))
+            #print sorted_match_times
+            #pylab.plot(zip(*sorted_match_times)[0], zip(*sorted_match_times)[1], '.')
             #pylab.show()
-        #print "%s Match Times: %s\n" % (self.name, sorted(song1_match_times))
-        #print "%s Match Times: %s\n" % (song2.name, sorted(song2_match_times))
-        if self.consecutive_time_chunk_match(sorted(song1_match_times), 1):
-            print "Match: %s %s" % (self.name, song2.name)
-        """if len(song1_match_times) > 5:
-                                    r2 = linregress(np.array(song1_match_times), np.array(song2_match_times))[2]**2
-                                    if r2 > .5:
-                                        print "Match: %s %s" % (self.name, song2.name)"""
+            print self.name, song2.name
+            if self.consecutive_time_matches(sorted(match_times, key=itemgetter(0)), 2, 15):
+                print "MATCH %s %s" % (self.name, song2.name)
+            else:
+                print "NO MATCH"
 
-    def consecutive_time_chunk_match(self, song1_chunk_times, song2_chunk_times, step_size, match_threshol):
+    def consecutive_time_matches(self, sorted_match_times, step_size, match_threshold):
+        chains = []
         chain = []
-        prev = None
-        for i in range(len(sorted_list)-1):
+        for i in range(len(sorted_match_times)-1):
             if not chain:
-                chain.append(sorted_list[i])
-            if len(chain) > 20:
+                chain.append(sorted_match_times[i])
+            if ((0 < (sorted_match_times[i+1][0] - sorted_match_times[i][0]) <= step_size)
+                and (0 < (sorted_match_times[i+1][1] - sorted_match_times[i][1]) <= step_size)):
+                chain.append(sorted_match_times[i+1])
+            else:
+                chains.append(chain)
+                chain = []
+        chains.append(chain)
+        if chains:
+            longest_chain = max(chains, key=lambda k: len(k))
+            if longest_chain:
+                pylab.plot(zip(*longest_chain)[0], zip(*longest_chain)[1], '.')
+                pylab.show()
+            if len(longest_chain) >= match_threshold:
                 return True
-            if (sorted_list[i+1] - sorted_list[i]) <= step_size:
-                chain.append(sorted_list[i+1])
             else:
                 return False
+        return False
 
 
 
