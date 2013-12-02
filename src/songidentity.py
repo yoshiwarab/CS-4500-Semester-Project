@@ -3,8 +3,7 @@ import numpy as np
 import wave
 from array import array
 from operator import itemgetter
-from scipy.stats import linregress
-import pylab
+
 
 class SongInfo(object):
 
@@ -37,9 +36,13 @@ class SongInfo(object):
         return name
 
     def set_name(self, name):
+        """Set the chunk file name attribute."""
         self.name = name
 
     def chunk_wavefile(self, wavefile):
+        """Read in the wavefile and create a list of SongChunk objects
+        to represent it.
+        """
         time = 0
         chunks = {}
         while True:
@@ -49,53 +52,68 @@ class SongInfo(object):
                     time, chunk_string, self.nchannels)
                 if chunk is not None:
                     chunks[chunk.hash()] = chunk
-                time = round(time + (float(constants.CHUNK_SIZE) / self.sample_rate), 3)
+                time = round(time +
+                             (float(constants.CHUNK_SIZE) / self.sample_rate),
+                             3)
             else:
                 break
         self.chunks = chunks
 
     def compare(self, song2):
+        """
+        Compares self to another song SongInfo object.  If the songs the
+        objects are derived from are likely from the same source we print
+        MATCH and the name attribute of the two objects.  If not, we print
+        NO MATCH.
+        """
         match_times = []
-        shorter, longer = (sorted([self, song2], key = lambda x: len(x.chunks)))
-        for chunk_hash,chunk in shorter.chunks.items():
+        shorter, longer = (sorted([self, song2],
+                                  key=lambda x: len(x.chunks)))
+        for chunk_hash, chunk in shorter.chunks.items():
             if chunk_hash in longer.chunks:
-                match_times.append((chunk.time, longer.chunks[chunk_hash].time))
+                match_times.append(
+                    (chunk.time, longer.chunks[chunk_hash].time))
         if match_times:
-            #sorted_match_times = sorted(match_times, key=itemgetter(0))
-            #print sorted_match_times
-            #pylab.plot(zip(*sorted_match_times)[0], zip(*sorted_match_times)[1], '.')
-            #pylab.show()
-            if self.consecutive_time_matches(sorted(match_times, key=itemgetter(0)), constants.CHUNK_STEP_SIZE, constants.MATCH_THRESHOLD):
+            sorted_match_times = sorted(match_times, key=itemgetter(1))
+            if self.consecutive_time_matches(sorted_match_times,
+                                             constants.CHUNK_STEP_SIZE,
+                                             constants.MATCH_THRESHOLD):
                 print "MATCH %s %s" % (shorter.name, longer.name)
             else:
                 print "NO MATCH"
         else:
             print "NO MATCH"
 
-    def consecutive_time_matches(self, sorted_match_times, step_size, match_threshold):
+    def consecutive_time_matches(self, sorted_match_times, step_size,
+                                 match_threshold):
+        """Returns true if the number of sequential matches in
+        sorted_match_times is greater than the match match_threshold.
+        Step size is used to determine what is considered sequential.
+        """
         chains = []
         chain = []
-        for i in range(len(sorted_match_times)-1):
+        for i in range(len(sorted_match_times) - 1):
+            shorter_match_diff = sorted_match_times[i + 1][0] - \
+                sorted_match_times[i][0]
+            longer_match_diff = sorted_match_times[i + 1][1] - \
+                sorted_match_times[i][1]
+
             if not chain:
                 chain.append(sorted_match_times[i])
-            if ((0 < (sorted_match_times[i+1][0] - sorted_match_times[i][0]) <= step_size)
-                and (0 < (sorted_match_times[i+1][1] - sorted_match_times[i][1]) <= step_size)):
-                chain.append(sorted_match_times[i+1])
+            if (0 < longer_match_diff <= step_size):
+                    #and (0 < s2_match_diff <= step_size)):
+                chain.append(sorted_match_times[i + 1])
             else:
                 chains.append(chain)
                 chain = []
         chains.append(chain)
         if chains:
             longest_chain = max(chains, key=lambda k: len(k))
-            #if longest_chain:
-                #pylab.plot(zip(*longest_chain)[0], zip(*longest_chain)[1], '.')
-                #pylab.show()
             if len(longest_chain) >= match_threshold:
                 return True
             else:
                 return False
         return False
-
 
 
 class SongChunk(object):
@@ -104,22 +122,26 @@ class SongChunk(object):
 
     @classmethod
     def from_bytestring(cls, time, bytestring, nchannels):
+        """Create a SongChunk object from a bytestring.
+        """
         integer_array = byte_string_to_integer_array(bytestring, nchannels)
         frequencies = abs(np.fft.rfft(integer_array))
         if len(frequencies) < 181:
             return None
-        return cls(time, [get_max_per_range(frequencies, x[0], x[1]) for x in ((40, 80), (80, 120), (120, 180), (180, 300))])
+        return cls(time,
+                   [get_max_per_range(frequencies, x[0], x[1]) for x in
+                    ((40, 80), (80, 120), (120, 180), (180, 300))])
 
     def __init__(self, time, bins):
         self.time = time
         self.bins = bins
 
     def hash(self):
-        """ Returns a 32-bit int identifying the chunk """
+        """ Returns an identifying the chunk """
         a, b, c, d = [x[0] for x in self.bins]
         f = constants.HASH_FUZZ
-        #return (d-(d%f)) * 100000000 + (c-(c%f)) * 100000 + (b-(b%f)) * 100 + (a-(a%f)) & 0xffffffff
-        return (((a - a%f) << 24) | ((b - b%f) << 16) | ((c - c%f) << 8) | (d - d%f)) & 0xffffffff
+        return hash((d - d % f, c - c % f, b - b % f, a - a % f))
+
 
 def get_max_per_range(r, a, b):
     """ Returns the maximum value within the given range
@@ -129,7 +151,7 @@ def get_max_per_range(r, a, b):
 
 
 def byte_string_to_integer_array(bytestring, nchannels):
-        """Converts output bytestring from wave.readframes into a 
+        """Converts output bytestring from wave.readframes into a
         signed integer array and converts from stereo to mono
         if neccessary.
         """

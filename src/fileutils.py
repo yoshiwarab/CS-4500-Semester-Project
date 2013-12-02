@@ -1,26 +1,25 @@
+import constants
 import os
 import shutil
-import string
 import subprocess
 import sys
-import tempfile 
-import wave
+import tempfile
 from songidentity import SongInfo
-
-#LAME_DECODE = "/course/cs4500f13/bin/lame -a --silent --decode -b 96 %s %s"
-LAME_DECODE = "/opt/local/bin/lame -a --silent --decode -s 24 %s %s"
-#LAME_ENCODE = "/course/cs4500f13/bin/lame -a --silent -b 96 %s %s"
-LAME_ENCODE = "/opt/local/bin/lame -a --silent %s %s"
-MP3_STRING = "MPEG ADTS, layer III"
 
 
 def is_mp3_file(filename):
+    """Checks the header information in a specified file to determine if
+    it is in mp3 format.
+    """
     header_info = subprocess.Popen(
         ["file", filename], stdout=subprocess.PIPE).stdout.read()
-    return MP3_STRING in header_info
+    return constants.MP3_STRING in header_info
 
 
 def is_wave_file(filename):
+    """Checks the header information in a specified file to determine if
+    it is in wave format.
+    """
     header_info = subprocess.Popen(
         ["file", filename], stdout=subprocess.PIPE).stdout.read()
     if (("RIFF" in header_info) and ("WAVE" in header_info)):
@@ -28,18 +27,27 @@ def is_wave_file(filename):
     else:
         return False
 
+
 def mp3_to_canonical(mp3, tempdir):
-    wav = "%s/%s.wav" % (tempdir, os.path.splitext(os.path.basename(mp3))[0])
-    decode = LAME_DECODE % (mp3, wav)
+    """Converts an mp3 file to canonical wave format"""
+    no_extension = os.path.splitext(os.path.basename(mp3))[0]
+    mp3two = "%s/%s.mp3" % (tempdir, no_extension)
+    shutil.copy(mp3, mp3two)
+    wav = "%s/%s.wav" % (tempdir, no_extension)
+    decode = constants.LAME_DECODE % (mp3two, wav)
     subprocess.call(decode.split(" "))
     return wav
 
+
 def wav_to_canonical(wav, tempdir):
-    mp3 = "%s/%s.mp3" % (tempdir, os.path.splitext(os.path.basename(wav))[0])
-    wav2 = "%s/%s.wav" % (tempdir, os.path.splitext(os.path.basename(wav))[0])
-    encode = LAME_ENCODE % (wav, mp3)
+    """Converts a wave file to canoncial format"""
+    no_extension = os.path.splitext(os.path.basename(wav))[0]
+    mp3 = "%s/%s.mp3" % (tempdir, no_extension)
+    wav2 = "%s/%s.wav" % (tempdir, no_extension)
+    shutil.copy(wav, wav2)
+    encode = constants.LAME_ENCODE % (wav2, mp3)
     subprocess.call(encode.split(" "))
-    decode = LAME_DECODE % (mp3, wav2)
+    decode = constants.LAME_DECODE % (mp3, wav2)
     subprocess.call(decode.split(" "))
     return wav2
 
@@ -60,7 +68,7 @@ def gen_file_list(flag_path_tup):
             for filename in os.listdir(pathname):
                 if not os.path.isfile(os.path.join(pathname, filename)):
                     sys.stderr.write(
-                        "Error: %s in directory %s is not a valid file." % (filename, pathname))
+                        "ERROR: %s in directory %s is not a valid file." % (filename, pathname))
                     continue
                 else:
                     filelist.append(os.path.join(pathname, filename))
@@ -68,6 +76,9 @@ def gen_file_list(flag_path_tup):
 
 
 def read_file(filename, tempdir):
+    """Checks that the specified file is valid and returns a SongInfo
+    object representing the file data if it is.
+    """
     if is_mp3_file(filename):
         name = os.path.basename(filename)
         canonical_wave = mp3_to_canonical(filename, tempdir)
@@ -75,11 +86,13 @@ def read_file(filename, tempdir):
         song_info.set_name(name)
         return song_info
     elif is_wave_file(filename):
+        name = os.path.basename(filename)
         canonical_wave = wav_to_canonical(filename, tempdir)
         song_info = SongInfo.from_file(canonical_wave)
+        song_info.set_name(name)
         return song_info
     else:
-        sys.stderr.write("%s is not in a supported format." % filename)
+        sys.stderr.write("ERROR: %s is not in a supported format." % filename)
 
 
 def read_files(filelist):
