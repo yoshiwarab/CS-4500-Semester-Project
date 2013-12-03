@@ -1,10 +1,9 @@
 --------------------------------------------------------------
 CS4500 Fall 2013 
 --------------------------------------------------------------
-Assignment 5
+Assignment 8
 
-Semester Project Rapid Prototype
-
+Semester Project
 --------------------------------------------------------------
 Team Members:
 --------------------------------------------------------------
@@ -17,12 +16,15 @@ Seydi Sy <syseydi@gmail.com>
 Compiling and Running Rapid Prototype:
 --------------------------------------------------------------
 
-
 -The prototype is ran on the command line. 
--It can be ran on any CCIS Linux machines. 
--The prototype input takes two files. 
+-It can be run on any CCIS Linux machines. 
+-The prototype input takes two files or directories. 
 -A file can be a file in WAVE or MP3 format 
-or a folder containing files in the WAVE or MP3 format
+or a folder containing files in the WAVE or MP3 format.
+
+Currently the program prints "Can't init outfile <pathname>' where pathname
+is the temporary location the program writes canonically formatted files.  Despite
+these messages The program still runs correctly.
 
 
 On a CCIS Linux Machine:
@@ -31,26 +33,34 @@ On a CCIS Linux Machine:
 1. Open the command line. 
 
 
-2. cd into our project directory containing the executable, 
-named src:
+2. cd into the 'src' directory in our project directory.
 
 
 $ cd src
 
+3. Make sure the file p4500 has executable permissions.
 
 4. Execute the following command:
 
 
-$ ./p4500 -f <name> -f <name>
+$ ./p4500 [options] <pathname> [options] <pathname>
+
 
 - Enter either -f for WAV/MP3 file, 
 or -d for a directory containing the WAV/MP3 files.
-- <name> is the path of the directory or file that already exists.
+- <pathname> is the path of the directory or file that already exists.
+
+The command will look like one of the following:
+
+    ./p4500 -f <pathname> -f <pathname>
+    ./p4500 -f <pathname> -d <pathname>
+    ./p4500 -d <pathname> -f <pathname>
+    ./p4500 -d <pathname> -d <pathname>
 
 
 --------------------------------------------------------------
 Third Party Software Used:
 --------------------------------------------------------------
-
-Python 2.7 (numpy, scipy) 
-LAME executable 
+numpy
+scipy 
+LAME executable
