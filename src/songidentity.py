@@ -100,8 +100,8 @@ class SongInfo(object):
 
             if not chain:
                 chain.append(sorted_match_times[i])
-            if (0 < longer_match_diff <= step_size):
-                    #and (0 < s2_match_diff <= step_size)):
+            if ((0 < longer_match_diff <= step_size)
+                    and (0 < shorter_match_diff <= step_size)):
                 chain.append(sorted_match_times[i + 1])
             else:
                 chains.append(chain)

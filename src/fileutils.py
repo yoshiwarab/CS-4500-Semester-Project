@@ -68,7 +68,7 @@ def gen_file_list(flag_path_tup):
             for filename in os.listdir(pathname):
                 if not os.path.isfile(os.path.join(pathname, filename)):
                     sys.stderr.write(
-                        "ERROR: %s in directory %s is not a valid file." % (filename, pathname))
+                        "ERROR: %s in directory %s is not a valid file.\n" % (filename, pathname))
                     continue
                 else:
                     filelist.append(os.path.join(pathname, filename))
@@ -92,7 +92,7 @@ def read_file(filename, tempdir):
         song_info.set_name(name)
         return song_info
     else:
-        sys.stderr.write("ERROR: %s is not in a supported format." % filename)
+        sys.stderr.write("ERROR: %s is not in a supported format.\n" % filename)
 
 
 def read_files(filelist):

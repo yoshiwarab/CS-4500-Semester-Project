@@ -5,11 +5,11 @@ CHUNK_STEP_SIZE = 1
 # CHUNK_STEP_SIZE is the maximum temporal difference between chunk matches
 # still considered to be part of a sequence of matches.
 
-HASH_FUZZ = 1
+HASH_FUZZ = 2
 # HASH_FUZZ is the amount of error correction applied when hashing
 # SongChunk objects.
 
-MATCH_THRESHOLD = 10
+MATCH_THRESHOLD = 5
 # MATCH_THRESHOLD is the number of sequential matches between two songs
 # required for a match.
 
