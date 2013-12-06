@@ -5,7 +5,7 @@ import subprocess
 import sys
 import tempfile
 from songidentity import SongInfo
-
+import wave
 
 def is_mp3_file(filename):
     """Checks the header information in a specified file to determine if
@@ -30,26 +30,37 @@ def is_wave_file(filename):
 
 def mp3_to_canonical(mp3, tempdir):
     """Converts an mp3 file to canonical wave format"""
-    no_extension = os.path.splitext(os.path.basename(mp3))[0]
-    mp3two = "%s/%s.mp3" % (tempdir, no_extension)
+    base = os.path.basename(mp3)
+    mp3two = "%s/%s.mp3" % (tempdir, base)
+    mp3_canonical = "%s/%s_canonical.mp3" % (tempdir, base)
+    wav_canonical = "%s/%s_canonical.wav" % (tempdir, base)
     shutil.copy(mp3, mp3two)
-    wav = "%s/%s.wav" % (tempdir, no_extension)
-    decode = constants.LAME_DECODE % (mp3two, wav)
+    encode = constants.LAME_ENCODE % (mp3two, mp3_canonical)
+    subprocess.call(encode.split(" "))
+    decode = constants.LAME_DECODE % (mp3_canonical, wav_canonical)
     subprocess.call(decode.split(" "))
-    return wav
+    wf = wave.open(wav_canonical)
+    print wav_canonical
+    print wf.getparams()
+    return wav_canonical
 
 
 def wav_to_canonical(wav, tempdir):
     """Converts a wave file to canoncial format"""
-    no_extension = os.path.splitext(os.path.basename(wav))[0]
-    mp3 = "%s/%s.mp3" % (tempdir, no_extension)
-    wav2 = "%s/%s.wav" % (tempdir, no_extension)
+    base = os.path.basename(wav)
+    mp3 = "%s/%s.mp3" % (tempdir, base)
+    wav2 = "%s/%s.wav" % (tempdir, base)
+    wav_canonical = "%s/%s_canonical.wav" % (tempdir, base)
     shutil.copy(wav, wav2)
     encode = constants.LAME_ENCODE % (wav2, mp3)
     subprocess.call(encode.split(" "))
-    decode = constants.LAME_DECODE % (mp3, wav2)
+    decode = constants.LAME_DECODE % (mp3, wav_canonical)
     subprocess.call(decode.split(" "))
-    return wav2
+    wf = wave.open(wav_canonical)
+    print wav_canonical
+    print wf.getparams()
+    return wav_canonical
+
 
 def gen_file_list(flag_path_tup):
     """Generates a list of all files in the given directory"""

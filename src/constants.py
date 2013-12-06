@@ -13,16 +13,17 @@ MATCH_THRESHOLD = 5
 # MATCH_THRESHOLD is the number of sequential matches between two songs
 # required for a match.
 
-# LAME_DECODE = "/opt/local/bin/lame -a --silent --decode -s 24 %s %s"
+# LAME_DECODE = "/opt/local/bin/lame -a --silent --decode -s  %s %s"
 # Used for testing on local machine.
 
-LAME_DECODE = "/course/cs4500f13/bin/lame -a --silent --decode -s 24 %s %s"
+
+LAME_DECODE = "/course/cs4500f13/bin/lame --quiet --decode %s %s"
 # Lame call to decode an mp3 file.
 
 # LAME_ENCODE = "/opt/local/bin/lame -a --silent %s %s"
 # Used for testing on local machine.
 
-LAME_ENCODE = "/course/cs4500f13/bin/lame -a --silent %s %s"
+LAME_ENCODE = "/course/cs4500f13/bin/lame -a --quiet %s %s"
 # Lame call to encode an mp3 file.
 
 MP3_STRING = "MPEG ADTS, layer III"
