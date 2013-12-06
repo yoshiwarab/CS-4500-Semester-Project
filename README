@@ -22,29 +22,30 @@ Compiling and Running Rapid Prototype:
 -A file can be a file in WAVE or MP3 format 
 or a folder containing files in the WAVE or MP3 format.
 
-Currently the program prints "Can't init outfile <pathname>' where pathname
-is the temporary location the program writes canonically formatted files.  Despite
-these messages The program still runs correctly.
-
-
 On a CCIS Linux Machine:
 
+To Compile:
 
-1. Open the command line. 
+1. cd into the src directory of our project folder
+and run the command:
 
+$ chmod +x p4500
 
-2. cd into the 'src' directory in our project directory.
+2. In the src directory run the command:
 
+$ python -m compileall . 
 
-$ cd src
+To Run:
 
-3. Make sure the file p4500 has executable permissions.
+1. Make sure you are in the src directory of our project
+directory.
 
-4. Execute the following command:
+2. Make sure the file p4500 has executable permissions.
+
+3. Execute the following command:
 
 
 $ ./p4500 [options] <pathname> [options] <pathname>
-
 
 - Enter either -f for WAV/MP3 file, 
 or -d for a directory containing the WAV/MP3 files.

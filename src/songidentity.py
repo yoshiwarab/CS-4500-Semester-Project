@@ -94,16 +94,17 @@ class SongInfo(object):
         chains = []
         chain = []
         for i in range(len(sorted_match_times) - 1):
-            shorter_match_diff = sorted_match_times[i + 1][0] - \
-                sorted_match_times[i][0]
-            longer_match_diff = sorted_match_times[i + 1][1] - \
-                sorted_match_times[i][1]
-
+            current_chunk = sorted_match_times[i]
+            next_chunk = sorted_match_times[i + 1]
+            shorter_match_diff = next_chunk[0] - \
+                current_chunk[0]
+            longer_match_diff = next_chunk[1] - \
+                current_chunk[1]
             if not chain:
-                chain.append(sorted_match_times[i])
+                chain.append(current_chunk)
             if ((0 < longer_match_diff <= step_size)
                     and (0 < shorter_match_diff <= step_size)):
-                chain.append(sorted_match_times[i + 1])
+                chain.append(next_chunk)
             else:
                 chains.append(chain)
                 chain = []

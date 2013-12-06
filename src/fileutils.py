@@ -40,8 +40,6 @@ def mp3_to_canonical(mp3, tempdir):
     decode = constants.LAME_DECODE % (mp3_canonical, wav_canonical)
     subprocess.call(decode.split(" "))
     wf = wave.open(wav_canonical)
-    print wav_canonical
-    print wf.getparams()
     return wav_canonical
 
 
@@ -57,8 +55,6 @@ def wav_to_canonical(wav, tempdir):
     decode = constants.LAME_DECODE % (mp3, wav_canonical)
     subprocess.call(decode.split(" "))
     wf = wave.open(wav_canonical)
-    print wav_canonical
-    print wf.getparams()
     return wav_canonical
 
 
@@ -77,9 +73,14 @@ def gen_file_list(flag_path_tup):
             raise IOError("%s is not a valid directory." % pathname)
         else:
             for filename in os.listdir(pathname):
+                if os.path.isdir(os.path.join(pathname, filename)):
+                    sys.stderr.write(
+                        ("ERROR: %s is a subdirectory of %s and will " 
+                         "not be handled\n" % (filename, pathname)))
                 if not os.path.isfile(os.path.join(pathname, filename)):
                     sys.stderr.write(
-                        "ERROR: %s in directory %s is not a valid file.\n" % (filename, pathname))
+                        ("ERROR: %s in directory %s is not a valid " 
+                         "file.\n") % (filename, pathname))
                     continue
                 else:
                     filelist.append(os.path.join(pathname, filename))
@@ -103,7 +104,7 @@ def read_file(filename, tempdir):
         song_info.set_name(name)
         return song_info
     else:
-        sys.stderr.write("ERROR: %s is not in a supported format.\n" % filename)
+        sys.stderr.write("ERROR: %s is not in a supported format." % filename)
 
 
 def read_files(filelist):

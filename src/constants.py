@@ -23,7 +23,7 @@ LAME_DECODE = "/course/cs4500f13/bin/lame --quiet --decode %s %s"
 # LAME_ENCODE = "/opt/local/bin/lame -a --silent %s %s"
 # Used for testing on local machine.
 
-LAME_ENCODE = "/course/cs4500f13/bin/lame -a --quiet %s %s"
+LAME_ENCODE = "/course/cs4500f13/bin/lame -a --quiet --resample 44.1 %s %s"
 # Lame call to encode an mp3 file.
 
 MP3_STRING = "MPEG ADTS, layer III"
