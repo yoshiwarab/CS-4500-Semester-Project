@@ -111,8 +111,6 @@ class SongInfo(object):
         chains.append(chain)
         if chains:
             longest_chain = max(chains, key=lambda k: len(k))
-            #if longest_chain:
-            #    print len(longest_chain)
             if len(longest_chain) >= match_threshold:
                 return True
             else:

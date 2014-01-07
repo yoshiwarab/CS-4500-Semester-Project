@@ -39,7 +39,6 @@ def mp3_to_canonical(mp3, tempdir):
     subprocess.call(encode.split(" "))
     decode = constants.LAME_DECODE % (mp3_canonical, wav_canonical)
     subprocess.call(decode.split(" "))
-    wf = wave.open(wav_canonical)
     return wav_canonical
 
 
@@ -54,7 +53,6 @@ def wav_to_canonical(wav, tempdir):
     subprocess.call(encode.split(" "))
     decode = constants.LAME_DECODE % (mp3, wav_canonical)
     subprocess.call(decode.split(" "))
-    wf = wave.open(wav_canonical)
     return wav_canonical
 
 
@@ -104,7 +102,7 @@ def read_file(filename, tempdir):
         song_info.set_name(name)
         return song_info
     else:
-        sys.stderr.write("ERROR: %s is not in a supported format." % filename)
+        sys.stderr.write("ERROR: %s is not in a supported format.\n" % filename)
 
 
 def read_files(filelist):
