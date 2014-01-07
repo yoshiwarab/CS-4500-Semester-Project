@@ -1,10 +1,9 @@
 --------------------------------------------------------------
 CS4500 Fall 2013 
 --------------------------------------------------------------
-Assignment 5
+Assignment 8
 
-Semester Project Rapid Prototype
-
+Semester Project
 --------------------------------------------------------------
 Team Members:
 --------------------------------------------------------------
@@ -17,40 +16,55 @@ Seydi Sy <syseydi@gmail.com>
 Compiling and Running Rapid Prototype:
 --------------------------------------------------------------
 
+<<<<<<< HEAD
 
 -The prototype is run on the command line. 
 -It can be run on any CCIS Linux machines. 
--The prototype input takes two files. 
+-The prototype input takes two files or directories. 
 -A file can be a file in WAVE or MP3 format 
-or a folder containing files in the WAVE or MP3 format
-
+or a folder containing files in the WAVE or MP3 format.
 
 On a CCIS Linux Machine:
 
+To Compile:
 
-1. Open the command line.
+1. cd into the src directory of our project folder
+and run the command:
+
+$ chmod +x p4500
+
+2. In the src directory run the command:
+
+$ python -m compileall . 
+
+To Run:
+
+1. Make sure you are in the src directory of our project
+directory.
+
+2. Make sure the file p4500 has executable permissions.
+
+3. Execute the following command:
 
 
-2. cd into the src subdirectory of our project directory.
-
-
-3. Make sure the file called p4500 has executable permission.
-
-
-4. Execute the following command:
-
-
-$ ./p4500 -f <name> -f <name>
+$ ./p4500 [options] <pathname> [options] <pathname>
 
 - Enter either -f for WAV/MP3 file, 
 or -d for a directory containing the WAV/MP3 files.
-- <name> is the full path of the directory or file that already exists.
+
+- <pathname> is the path of the directory or file that already exists.
+
+The command will look like one of the following:
+
+    ./p4500 -f <pathname> -f <pathname>
+    ./p4500 -f <pathname> -d <pathname>
+    ./p4500 -d <pathname> -f <pathname>
+    ./p4500 -d <pathname> -d <pathname>
 
 
 --------------------------------------------------------------
 Third Party Software Used:
 --------------------------------------------------------------
-
 numpy
 scipy 
-LAME executable 
+LAME executable
